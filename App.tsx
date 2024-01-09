@@ -1,20 +1,63 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from "react";
+import {
+  Button,
+  FlatList,
+  StyleSheet,
+  View
+} from "react-native";
+import TaskInput from "./components/TaskInput";
+import TaskItem from "./components/TaskItem";
+import { StatusBar } from "expo-status-bar";
 
 export default function App() {
+  const [modalIsVisible,setModalIsVisible] = useState<boolean>(false)
+  const [addTasks, setAddTasks] = useState<string[]>([]);
+
+  const addTask = (enteredTask:string) => {
+      setAddTasks((prev) => [...prev, enteredTask]);
+  };
+  const removeTaskFromList = (index: number) => {
+    const newList = addTasks.filter((_, idx) => index !== idx);
+    setAddTasks(newList);
+  };
+  const addTaskHandler = ()=>{
+    setModalIsVisible(!modalIsVisible)
+  }
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <>
+    <StatusBar style="light"/>
+    <View style={styles.appContaine}>
+      <View style={styles.addtaskBtn}>
+      <Button title="Add New Task" color={"rgb(168 85 247)"} onPress={addTaskHandler}/>
+      </View>
+     <TaskInput  addTask={addTask} isVisible={modalIsVisible} controlModal={addTaskHandler}/>
+      <View style={styles.taskContainer}>
+        <FlatList
+          data={addTasks}
+          renderItem={(itemData) => <TaskItem itemData={itemData} removeTaskFromList={removeTaskFromList}/>}
+        />
+      </View>
     </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  addtaskBtn:{
+    alignItems:'flex-end',
+    marginBottom:20,
+    paddingHorizontal:10,
+   borderRadius:20
   },
+  appContaine: {
+    flex: 1,
+    paddingTop: 50,
+    paddingHorizontal:20
+
+  },
+  taskContainer: {
+    flex: 5,
+  },
+
+ 
 });
